@@ -1,3 +1,7 @@
+/*
+ * @Author: Li Junjie
+ * @Description: 
+ */
 /* 
  * CS:APP Data Lab 
  * 
@@ -132,7 +136,6 @@ NOTES:
  *      the correct answers.
  */
 
-
 #endif
 //1
 /* 
@@ -142,20 +145,23 @@ NOTES:
  *   Max ops: 14
  *   Rating: 1
  */
-int bitXor(int x, int y) {
-  return 2;
+int bitXor(int x, int y)
+{
+  /* Use truth talbe, sum-of-products and De Morgan's Laws */
+  return ~(~(~x & y) & ~(x & ~y));
 }
+
 /* 
  * tmin - return minimum two's complement integer 
  *   Legal ops: ! ~ & ^ | + << >>
  *   Max ops: 4
  *   Rating: 1
  */
-int tmin(void) {
-
-  return 2;
-
+int tmin(void)
+{
+  return 1 << 31;
 }
+
 //2
 /*
  * isTmax - returns 1 if x is the maximum, two's complement number,
@@ -164,9 +170,15 @@ int tmin(void) {
  *   Max ops: 10
  *   Rating: 1
  */
-int isTmax(int x) {
-  return 2;
+int isTmax(int x)
+{
+  // Tmax + 1 = ~Tmax, use x ^ y = 0 to justify x == y
+  // exclude -1 because (-1 + 1) = ~(-1), use -1 + 1 = 0 to exclude -1
+  // other number a add 1 will not affect the sign bit(most significant bit), 
+  // so (a + 1) != ~a
+  return !((!(x + 1)) | ((x + 1) ^ ~x));
 }
+
 /* 
  * allOddBits - return 1 if all odd-numbered bits in word set to 1
  *   where bits are numbered from 0 (least significant) to 31 (most significant)
@@ -175,9 +187,14 @@ int isTmax(int x) {
  *   Max ops: 12
  *   Rating: 2
  */
-int allOddBits(int x) {
-  return 2;
+int allOddBits(int x)
+{
+  // b = 0xAAAAAAAA is to long, use 0xAA to generate
+  int a = 0xAA << 8 | 0xAA;
+  int b = a << 16 | a;
+  return !((x & b) ^ b);
 }
+
 /* 
  * negate - return -x 
  *   Example: negate(1) = -1.
@@ -185,9 +202,13 @@ int allOddBits(int x) {
  *   Max ops: 5
  *   Rating: 2
  */
-int negate(int x) {
-  return 2;
+int negate(int x)
+{
+  // x + ~x = -1;  x + -x = 0
+  // -x = ~x + 1;
+  return ~x + 1;
 }
+
 //3
 /* 
  * isAsciiDigit - return 1 if 0x30 <= x <= 0x39 (ASCII codes for characters '0' to '9')
@@ -198,9 +219,20 @@ int negate(int x) {
  *   Max ops: 15
  *   Rating: 3
  */
-int isAsciiDigit(int x) {
-  return 2;
+int isAsciiDigit(int x)
+{
+  /* 
+  ** First confirm the number from fourth to the highest is 0x3
+  ** Then confirm the number form the least significant to third bit
+  ** is lower than 10
+  *** Add -10 (~10 + 1), then the most siginificant bit shoule be one (negative number)
+  */
+  int four2highest = !((x >> 4) ^ 0x03);
+  // the !!number covert a number != 0 to 1
+  int zero2three = !!(((x & 0x0F) + (~10 + 1)) >> 31);
+  return four2highest & zero2three;
 }
+
 /* 
  * conditional - same as x ? y : z 
  *   Example: conditional(2,4,5) = 4
@@ -208,9 +240,13 @@ int isAsciiDigit(int x) {
  *   Max ops: 16
  *   Rating: 3
  */
-int conditional(int x, int y, int z) {
-  return 2;
+int conditional(int x, int y, int z)
+{
+  int selecotr = !!x; // selectore = 0 if x == 0 else selector = 1
+  selecotr = ~selecotr + 1; // selector = 0xFFFFFFFF if selector !=0 else selector = 0
+  return (selecotr & y) | (~selecotr & z);
 }
+
 /* 
  * isLessOrEqual - if x <= y  then return 1, else return 0 
  *   Example: isLessOrEqual(4,5) = 1.
@@ -218,9 +254,17 @@ int conditional(int x, int y, int z) {
  *   Max ops: 24
  *   Rating: 3
  */
-int isLessOrEqual(int x, int y) {
-  return 2;
+int isLessOrEqual(int x, int y)
+{
+  int x_sub_y = x + ~y + 1;  // -y = ~y + 1
+  int ZF = !x_sub_y;  // zero flag
+  int SF = !!(x_sub_y >> 31);  // sign flag
+  int x_sign = !!(x >> 31);
+  int y_sign = !!(y >> 31);
+  int OF = (x_sign ^ y_sign) & (x_sign ^ SF);  // overflow flag
+  return (SF ^ OF) | ZF;
 }
+
 //4
 /* 
  * logicalNeg - implement the ! operator, using all of 
@@ -230,9 +274,14 @@ int isLessOrEqual(int x, int y) {
  *   Max ops: 12
  *   Rating: 4 
  */
-int logicalNeg(int x) {
-  return 2;
+int logicalNeg(int x)
+{
+  // -x = ~x + 1
+  // the most siginificant bit of x | -x will be 0 iff x = 0 otherwise
+  // it will be 1
+  return ((x | (~x + 1)) >> 31) + 1;
 }
+
 /* howManyBits - return the minimum number of bits required to represent x in
  *             two's complement
  *  Examples: howManyBits(12) = 5
@@ -245,9 +294,61 @@ int logicalNeg(int x) {
  *  Max ops: 90
  *  Rating: 4
  */
-int howManyBits(int x) {
-  return 0;
+int howManyBits(int x)
+{
+  /*
+  * If x > 0, the minimum number of bits required to represent x in two's complement equlas
+  * the position of the most significant bit(MSB) add a sign bit.
+  * If x < 0, the same is true for ~x 
+  * Using the concept of binary search for processing.
+  */
+  int sign;
+  int result;
+  int MSB_in_high_order_16_bits;
+  int MSB_in_high_order_8_bits;
+  int MSB_in_high_order_4_bits;
+  int MSB_in_high_order_2_bits;
+  int MSB_in_high_order_1_bits;
+  int offset;
+
+  result = 1; // at lest need a sign bit.
+
+  sign = !!(x >> 31);
+  x = (~sign + 1) ^ x; // if x < 0, will get ~x, if x > 0, will get x 
+
+  MSB_in_high_order_16_bits = !!(x >> 16); 
+  // if MSB in higher order 16 bit, offset = 16, else offset = 0     
+  offset = MSB_in_high_order_16_bits << 4;  
+  result += offset;  
+  // if MSB_in_high_order_16_bits, do nothing, else set x to the high-order-16 bits
+  x >>= offset;  
+
+  // the rest is the same as the 16 bit
+  MSB_in_high_order_8_bits = !!(x >> 8);
+  offset = MSB_in_high_order_8_bits << 3;
+  result += offset;
+  x >>= offset;
+
+  MSB_in_high_order_4_bits = !!(x >> 4);
+  offset = MSB_in_high_order_4_bits << 2;
+  result += offset;
+  x >>= offset;
+
+  MSB_in_high_order_2_bits = !!(x >> 2);
+  offset = MSB_in_high_order_2_bits << 1;
+  result += offset;
+  x >>= offset;
+
+  MSB_in_high_order_1_bits = !!(x >> 1);
+  offset = MSB_in_high_order_1_bits;
+  result += offset;
+  x >>= offset;
+
+  result += x;
+
+  return result;
 }
+
 //float
 /* 
  * floatScale2 - Return bit-level equivalent of expression 2*f for
@@ -260,9 +361,37 @@ int howManyBits(int x) {
  *   Max ops: 30
  *   Rating: 4
  */
-unsigned floatScale2(unsigned uf) {
-  return 2;
+unsigned floatScale2(unsigned uf)
+{
+  unsigned sign, significand, exponent;
+
+  exponent = uf << 1 >> 24;
+  if (exponent == 255) /*f is NaN or inf*/
+    return uf;
+
+  sign = uf >> 31;
+  significand = uf << 9 >> 9;
+  if (exponent) /* f is a Normalized Value*/
+  {
+    exponent += 1;
+    if (exponent == 255) /* 2 * f is inf */
+      significand = 0;
+  }
+  else
+  {
+    /* f is a Denormalized Value */
+    if (significand >> 22)
+    {
+      exponent = 1;  /* need turn it to a Normalized value*/
+      significand = significand << 10 >> 9;  /* remove the first bit of significand */
+    }
+    else {
+      significand <<= 1;
+    }
+  }
+  return (sign << 31) + (exponent << 23) + significand;
 }
+
 /* 
  * floatFloat2Int - Return bit-level equivalent of expression (int) f
  *   for floating point argument f.
@@ -275,9 +404,32 @@ unsigned floatScale2(unsigned uf) {
  *   Max ops: 30
  *   Rating: 4
  */
-int floatFloat2Int(unsigned uf) {
-  return 2;
+int floatFloat2Int(unsigned uf)
+{
+  unsigned sign, signicificand, exponent;
+  int offset;
+
+  exponent = uf << 1 >> 24;
+  if (exponent >= 158) /* 158 = 127 + 31 */
+    return 1 << 31;    /*0x80000000*/
+  if (exponent < 127)  /* value < 1 */
+    return 0;
+  
+  /* otherwise uf represent a normal value */
+  sign = uf >> 31;
+  signicificand = (uf << 9 >> 9) | (1 << 23);
+  /* if exponet = 127 + 23 = 150, sigicificand will be the absolute value.*/
+  offset = exponent - 150;
+  if (offset <= 0)
+    signicificand >>= -offset;
+  else
+    signicificand <<= offset;
+
+  if (sign)
+    return ~signicificand + 1;
+  return signicificand;
 }
+
 /* 
  * floatPower2 - Return bit-level equivalent of the expression 2.0^x
  *   (2.0 raised to the power x) for any 32-bit integer x.
@@ -291,6 +443,19 @@ int floatFloat2Int(unsigned uf) {
  *   Max ops: 30 
  *   Rating: 4
  */
-unsigned floatPower2(int x) {
-    return 2;
+unsigned floatPower2(int x)
+{
+
+  if (x < -149) /* to small -149 = -126 - 23 */
+    return 0;
+
+  if (x >= 128) /* +inf 128 = 127 + 1 */
+    return 255 << 23;  /* exponet = 255, all 1,  +INF */
+
+  /* denormal */
+  if (x <= -127 && x >= -149)  /*exponet = 0*/
+    return 1 << (149 + x);
+
+  /* normal */
+  return (x + 127) << 23;  /* siginifcand = 0 */
 }
