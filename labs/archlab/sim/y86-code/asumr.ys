@@ -16,7 +16,6 @@ main:	irmovq array,%rdi
 	call rsum		# rsum(array, 4)
 	ret
 
-/* $begin rsum-ys */
 # long rsum(long *start, long count)
 # start in %rdi, count in %rsi
 rsum:
@@ -34,7 +33,6 @@ rsum:
 	popq %rbx		# Restore callee-saved register
 return:
 	ret
-/* $end rsum-ys */
 
 # The stack starts here and grows to lower addresses
 	.pos 0x200		

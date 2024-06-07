@@ -16,7 +16,6 @@ main:	irmovq array,%rdi
 	call sum		# sum(array, 4)
 	ret 
 
-/* $begin sumi-ys */
 # long sum(long *start, long count)
 # start in %rdi, count in %rsi
 sum:
@@ -31,7 +30,6 @@ loop:
 test:
 	jne    loop             # Stop when 0
 	ret
-/* $end sumi-ys */
 
 # The stack starts here and grows to lower addresses
 	.pos 0x100		

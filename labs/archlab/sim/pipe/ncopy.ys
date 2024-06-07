@@ -15,29 +15,173 @@ ncopy:
 
 ##################################################################
 # You can modify this portion
-	# Loop header
-	xorq %rax,%rax		# count = 0;
-	andq %rdx,%rdx		# len <= 0?
-	jle Done		# if so, goto Done:
+    # Loop header
+    xorq %rax,%rax        # count = 0;
+    iaddq $-9, %rdx
+    mrmovq (%rdi), %r8
+    jl Remainder
+    
+K_Loop:
+    rmmovq %r8, (%rsi)    
+    andq %r8, %r8
+    mrmovq 0x08(%rdi), %r8
+    jle Npos1
+    iaddq $1, %rax
+Npos1:
+    rmmovq %r8, 0x08(%rsi)
+    andq %r8, %r8        
+    mrmovq 0x10(%rdi), %r8
+    jle Npos2
+    iaddq $1, %rax
+Npos2:    
+    rmmovq %r8, 0x10(%rsi)
+    andq %r8, %r8
+    mrmovq 0x18(%rdi), %r8
+    jle Npos3        
+    iaddq $1, %rax
+Npos3:
+    rmmovq %r8, 0x18(%rsi)
+    andq %r8, %r8
+    mrmovq 0x20(%rdi), %r8
+    jle Npos4    
+    iaddq $1, %rax
+Npos4:
+    rmmovq %r8, 0x20(%rsi)
+    andq %r8, %r8
+    mrmovq 0x28(%rdi), %r8
+    jle Npos5
+    iaddq $1, %rax
+Npos5:
+    rmmovq %r8, 0x28(%rsi)
+    andq %r8, %r8
+    mrmovq 0x30(%rdi), %r8
+    jle Npos6
+    iaddq $1, %rax
+Npos6:
+    rmmovq %r8, 0x30(%rsi)
+    andq %r8, %r8
+    mrmovq 0x38(%rdi), %r8
+    jle Npos7
+    iaddq $1, %rax
+Npos7:
+    rmmovq %r8, 0x38(%rsi)
+    andq %r8, %r8    
+    mrmovq 0x40(%rdi), %r8
+    jle Npos8
+    iaddq $1, %rax
+Npos8:
+    rmmovq %r8, 0x40(%rsi)
+    andq %r8, %r8    
+    jle Npos9
+    iaddq $1, %rax
+Npos9:
+    iaddq $0x48, %rdi    
+    iaddq $0x48, %rsi
 
-Loop:	mrmovq (%rdi), %r10	# read val from src...
-	rmmovq %r10, (%rsi)	# ...and store it to dst
-	andq %r10, %r10		# val <= 0?
-	jle Npos		# if so, goto Npos:
-	irmovq $1, %r10
-	addq %r10, %rax		# count++
-Npos:	irmovq $1, %r10
-	subq %r10, %rdx		# len--
-	irmovq $8, %r10
-	addq %r10, %rdi		# src++
-	addq %r10, %rsi		# dst++
-	andq %rdx,%rdx		# len > 0?
-	jg Loop			# if so, goto Loop:
+    mrmovq (%rdi), %r8
+    iaddq $-9, %rdx
+    jge K_Loop
+
+Remainder:
+    iaddq $5, %rdx
+    jl Remainder_0_3
+    rmmovq %r8, (%rsi)
+    jg Remainder_5_8
+    jmp Remainder_4
+
+Remainder_0_3:
+    iaddq $2, %rdx
+    jl Remainder_0_1
+    rmmovq %r8, (%rsi)
+    je Remainder_2
+    jmp Remainder_3
+
+Remainder_0_1:
+    iaddq $1, %rdx
+    je Remainder_1
+    ret
+
+Remainder_5_8:
+    iaddq $-2, %rdx
+    jg Remainder_7_8
+    jl Remainder_5
+    jmp Remainder_6
+
+Remainder_7_8:
+    iaddq $-1, %rdx
+    je Remainder_7
+
+Remainder_8:
+    andq %r8, %r8
+    mrmovq 56(%rdi), %r8
+    jle Remainder_Nop8
+    iaddq $1, %rax
+Remainder_Nop8:
+    rmmovq %r8, 56(%rsi)
+
+Remainder_7:
+    andq %r8, %r8
+    mrmovq 48(%rdi), %r8
+    jle Remainder_Nop7
+    iaddq $1, %rax
+Remainder_Nop7:
+    rmmovq %r8, 48(%rsi)
+
+Remainder_6:
+    andq %r8, %r8
+    mrmovq 40(%rdi), %r8
+    jle Remainder_Nop6
+    iaddq $1, %rax
+Remainder_Nop6:
+    rmmovq %r8, 40(%rsi)
+
+Remainder_5:
+    andq %r8, %r8
+    mrmovq 32(%rdi), %r8
+    jle Remainder_Nop5
+    iaddq $1, %rax
+Remainder_Nop5:
+    rmmovq %r8, 32(%rsi)
+
+Remainder_4:
+    andq %r8, %r8
+    mrmovq 24(%rdi), %r8
+    jle Remainder_Nop4
+    iaddq $1, %rax
+Remainder_Nop4:
+    rmmovq %r8, 24(%rsi)
+
+Remainder_3:
+    andq %r8, %r8
+    mrmovq 16(%rdi), %r8
+    jle Remainder_Nop3
+    iaddq $1, %rax
+Remainder_Nop3:
+    rmmovq %r8, 16(%rsi)
+
+Remainder_2:
+    andq %r8, %r8
+    mrmovq 8(%rdi), %r8
+    jle Remainder_Nop2
+    iaddq $1, %rax
+Remainder_Nop2:
+    rmmovq %r8, 8(%rsi)
+    andq %r8, %r8
+    jle Done
+    iaddq $1, %rax
+    ret
+
+Remainder_1:
+    rmmovq %r8, (%rsi)
+    andq %r8, %r8
+    jle Done
+    iaddq $1, %rax
+    
 ##################################################################
 # Do not modify the following section of code
 # Function epilogue.
 Done:
-	ret
+    ret
 ##################################################################
 # Keep the following label at the end of your function
 End:

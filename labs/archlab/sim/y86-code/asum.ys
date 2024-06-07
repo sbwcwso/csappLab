@@ -11,7 +11,8 @@ array:	.quad 0x000d000d000d
 	.quad 0x0b000b000b00
 	.quad 0xa000a000a000
 
-main:	irmovq array,%rdi
+main:	
+  irmovq array,%rdi
 	irmovq $4,%rsi
 	call sum		# sum(array, 4)
 	ret

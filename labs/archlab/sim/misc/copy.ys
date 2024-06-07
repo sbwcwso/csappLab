@@ -1,0 +1,46 @@
+# Execution begins at address 0 
+  .pos 0
+  irmovq stack, %rsp    # Set up stack pointer
+  irmovq src, %rdi
+  irmovq dest, %rsi
+  irmovq $3, %rdx
+  call copy_block    # copy_block(src, dest, len)
+  halt      # Terminate program 
+
+.align 8
+# Source block
+src:
+  .quad 0x00a
+  .quad 0x0b0
+  .quad 0xc00
+
+# Destination block
+dest:
+  .quad 0x111
+  .quad 0x222
+  .quad 0x333
+
+
+
+# long copy_block(src, dest, len)
+# src in %rdi, dest in %rsi, len in %rdx
+copy_block:
+  andq %rdx, %rdx  # set CC
+  jle done
+  xorq %rax, %rax  # val = 0
+  irmovq $8, %r8
+  irmovq $1, %r9
+loop:
+  mrmovq (%rdi), %r10  # val = *src
+  rmmovq %r10, (%rsi)
+  xorq %r10, %rax
+  addq %r8, %rdi  # src++
+  addq %r8, %rsi  # dest++
+  subq %r9, %rdx  # len-- and set CC
+  jne loop
+done:
+  ret
+
+# Stack starts here and grows to lower addresses
+  .pos 0x200
+stack:

@@ -1,0 +1,180 @@
+#/* $begin ncopy-ys */
+##################################################################
+# ncopy.ys - Copy a src block of len words to dst.
+# Return the number of positive words (>0) contained in src.
+#
+# Include your name and ID here.
+#
+# Describe how and why you modified the baseline code.
+#
+##################################################################
+# Do not modify this portion
+# Function prologue.
+# %rdi = src, %rsi = dst, %rdx = len
+ncopy:
+
+##################################################################
+# You can modify this portion
+	# Loop header
+  xorq %rax,%rax		# count = 0;
+  iaddq $-8, %rdx
+  jge K_Loop_first
+
+
+  iaddq -64, %rdi	
+  iaddq -64, %rsi
+  iaddq $4, %rdx
+  mrmovq 64(%rdi), %r8
+  jl Remainder_0_3
+  rmmovq %r8, 64(%rsi)
+  jg Remainder_5_7
+  jmp Remainder_4
+
+K_Loop:
+	iaddq $0x40, %rdi	
+	iaddq $0x40, %rsi
+K_Loop_first:
+  mrmovq (%rdi), %r8
+  mrmovq 0x08(%rdi), %r9
+	andq %r8, %r8
+	rmmovq %r8, (%rsi)	
+	jle Npos1
+	iaddq $1, %rax
+Npos1:
+	rmmovq %r9, 0x08(%rsi)
+	andq %r9, %r9		
+  mrmovq 0x10(%rdi), %r8
+	jle Npos2
+	iaddq $1, %rax
+Npos2:	
+  rmmovq %r8, 0x10(%rsi)
+	andq %r8, %r8
+  mrmovq 0x18(%rdi), %r8
+	jle Npos3		
+	iaddq $1, %rax
+Npos3:
+  rmmovq %r8, 0x18(%rsi)
+	andq %r8, %r8
+  mrmovq 0x20(%rdi), %r8
+	jle Npos4	
+	iaddq $1, %rax
+Npos4:
+  rmmovq %r8, 0x20(%rsi)
+	andq %r8, %r8
+  mrmovq 0x28(%rdi), %r8
+	jle Npos5
+	iaddq $1, %rax
+Npos5:
+  rmmovq %r8, 0x28(%rsi)
+	andq %r8, %r8
+  mrmovq 0x30(%rdi), %r8
+	jle Npos6
+	iaddq $1, %rax
+Npos6:
+  rmmovq %r8, 0x30(%rsi)
+	andq %r8, %r8
+  mrmovq 0x38(%rdi), %r8
+	jle Npos7
+	iaddq $1, %rax
+Npos7:
+	andq %r8, %r8	
+  rmmovq %r8, 0x38(%rsi)
+	jle Npos8
+	iaddq $1, %rax
+Npos8:
+  iaddq $-8, %rdx
+  jge K_Loop
+
+Remainder:
+  iaddq $4, %rdx
+  mrmovq 64(%rdi), %r8
+  jl Remainder_0_3
+  rmmovq %r8, 64(%rsi)
+  jg Remainder_5_7
+  jmp Remainder_4
+
+Remainder_0_3:
+  iaddq $2, %rdx
+  jl Remainder_0_1
+  rmmovq %r8, 64(%rsi)
+  je Remainder_2
+  jg Remainder_3
+
+Remainder_0_1:
+  iaddq $1, %rdx
+  je Remainder_1
+  ret
+
+Remainder_5_7:
+  iaddq $-2, %rdx
+  jl Remainder_5
+  je Remainder_6
+
+Remainder_7:
+  andq %r8, %r8
+  mrmovq 112(%rdi), %r8
+  jle Remainder_Nop7
+  iaddq $1, %rax
+Remainder_Nop7:
+  rmmovq %r8, 112(%rsi)
+
+Remainder_6:
+  andq %r8, %r8
+  mrmovq 104(%rdi), %r8
+  jle Remainder_Nop6
+  iaddq $1, %rax
+Remainder_Nop6:
+  rmmovq %r8, 104(%rsi)
+
+Remainder_5:
+  andq %r8, %r8
+  mrmovq 96(%rdi), %r8
+  jle Remainder_Nop5
+  iaddq $1, %rax
+Remainder_Nop5:
+  rmmovq %r8, 96(%rsi)
+
+Remainder_4:
+  andq %r8, %r8
+  mrmovq 88(%rdi), %r8
+  jle Remainder_Nop4
+  iaddq $1, %rax
+Remainder_Nop4:
+  rmmovq %r8, 88(%rsi)
+
+Remainder_3:
+  andq %r8, %r8
+  mrmovq 80(%rdi), %r8
+  jle Remainder_Nop3
+  iaddq $1, %rax
+Remainder_Nop3:
+  rmmovq %r8, 80(%rsi)
+
+Remainder_2:
+  andq %r8, %r8
+  mrmovq 72(%rdi), %r8
+  jle Remainder_Nop2
+  iaddq $1, %rax
+Remainder_Nop2:
+  rmmovq %r8, 72(%rsi)
+  andq %r8, %r8
+  jle Done
+  iaddq $1, %rax
+  ret
+
+Remainder_1:
+  rmmovq %r8, 64(%rsi)
+  andq %r8, %r8
+  jle Done
+  iaddq $1, %rax
+  ret
+
+##################################################################
+# Do not modify the following section of code
+# Function epilogue.
+Done:
+	ret
+##################################################################
+# Keep the following label at the end of your function
+End:
+#/* $end ncopy-ys */

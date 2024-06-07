@@ -27,7 +27,6 @@ absSum:
 	xorq %rax,%rax		# sum = 0
 	andq %rsi,%rsi		# Set condition codes
 	jmp  test
-/* $begin abs-sum-cmov-ys */
 loop:
 	mrmovq (%rdi),%r10	# x = *start
 	xorq %r11,%r11          # Constant 0
@@ -38,7 +37,6 @@ loop:
 	subq %r9,%rsi           # count--
 test:
 	jne    loop             # Stop when 0
-/* $end abs-sum-cmov-ys */
 	ret
 
 # The stack starts here and grows to lower addresses

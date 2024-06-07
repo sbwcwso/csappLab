@@ -17,7 +17,6 @@ main:	irmovq array,%rdi
 	irmovq $4,%rsi
 	call absSum		# absSum(array, 4)
 	ret 
-/* $begin abs-sum-jmp-ys */
 # long absSum(long *start, long count)
 # start in %rdi, count in %rsi
 absSum:
@@ -39,7 +38,6 @@ pos:
 test:
 	jne    loop             # Stop when 0
 	ret
-/* $end abs-sum-jmp-ys */
 
 # The stack starts here and grows to lower addresses
 	.pos 0x200		

@@ -1,0 +1,133 @@
+#/* $begin ncopy-ys */
+##################################################################
+# ncopy.ys - Copy a src block of len words to dst.
+# Return the number of positive words (>0) contained in src.
+#
+# Include your name and ID here.
+#
+# Describe how and why you modified the baseline code.
+#
+##################################################################
+# Do not modify this portion
+# Function prologue.
+# %rdi = src, %rsi = dst, %rdx = len
+ncopy:
+
+##################################################################
+# You can modify this portion
+	# Loop header
+  xorq %rax,%rax		# count = 0;
+  irmovq $1, %r9
+  mrmovq 0x50(%rdi), %r8
+  iaddq $-11, %rdx
+  jge K_Loop
+  jmp Remainder
+
+K_Loop:
+  rmmovq %r8, 0x50(%rsi)	
+  andq %r8, %r8
+  mrmovq 0x48(%rdi), %r8
+  jle Remainder_10
+  iaddq $1, %rax
+
+Remainder_10:
+  rmmovq %r8, 0x48(%rsi)
+  andq %r8, %r8
+  mrmovq 0x40(%rdi), %r8
+  jle Remainder_9
+  iaddq $1, %rax
+
+Remainder_9:
+  rmmovq %r8, 0x40(%rsi)
+  andq %r8, %r8	
+  mrmovq 0x38(%rdi), %r8
+  jle Remainder_8
+  iaddq $1, %rax
+
+Remainder_8:
+  rmmovq %r8, 0x38(%rsi)
+  andq %r8, %r8	
+  mrmovq 0x30(%rdi), %r8
+  jle Remainder_7
+  iaddq $1, %rax
+
+Remainder_7:
+  rmmovq %r8, 0x30(%rsi)
+  andq %r8, %r8	
+  mrmovq 0x28(%rdi), %r8
+  jle Remainder_6
+  iaddq $1, %rax
+
+Remainder_6:
+  rmmovq %r8, 0x28(%rsi)
+  andq %r8, %r8	
+  mrmovq 0x20(%rdi), %r8
+  jle Remainder_5
+  iaddq $1, %rax
+
+Remainder_5:
+  rmmovq %r8, 0x20(%rsi)
+  andq %r8, %r8	
+  mrmovq 0x18(%rdi), %r8
+  jle Remainder_4
+  iaddq $1, %rax
+
+Remainder_4:
+  rmmovq %r8, 0x18(%rsi)
+  andq %r8, %r8	
+  mrmovq 0x10(%rdi), %r8
+  jle Remainder_3
+  iaddq $1, %rax
+
+Remainder_3:
+  rmmovq %r8, 0x10(%rsi)
+  andq %r8, %r8	
+  mrmovq 0x08(%rdi), %r8
+  jle Remainder_2
+  iaddq $1, %rax
+
+Remainder_2:
+  rmmovq %r8, 0x08(%rsi)
+  andq %r8, %r8	
+  mrmovq (%rdi), %r8
+  jle Remainder_1
+  iaddq $1, %rax
+
+Remainder_1:
+  rmmovq %r8, (%rsi)
+  andq %r8, %r8
+  jle K_loop_inc 
+  iaddq $1, %rax
+K_loop_inc:
+  iaddq $0x58, %rdi	
+  iaddq $0x58, %rsi
+  mrmovq 0x50(%rdi), %r8
+  iaddq $-11, %rdx
+  jge K_Loop
+
+Remainder:
+  iaddq $11, %rdx
+  je Done
+Loop:	
+    mrmovq (%rdi), %r8	# read val from src...
+	iaddq $8, %rdi		# src++
+	rmmovq %r8, (%rsi)	# ...and store it to dst
+	iaddq $8, %rsi		# dst++
+	andq %r8, %r8		# val <= 0?
+	jle Npos		# if so, goto Npos:
+	iaddq $1, %rax		# count++
+Npos:
+	iaddq $-1, %rdx		# len--
+	jg Loop			# if so, goto Loop:
+  
+
+
+##################################################################
+# Do not modify the following section of code
+# Function epilogue.
+Done:
+	ret
+##################################################################
+# Keep the following label at the end of your function
+End:
+#/* $end ncopy-ys */
